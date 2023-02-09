@@ -64,6 +64,7 @@ MonoBehaviour:
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
+  m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
 --- !u!114 &4111262445975153801
 MonoBehaviour:
@@ -80,10 +81,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 5000
   parentMultipleTargets: {fileID: 4111262446467461318}
   currentTarget: {fileID: 2124979748309088887}
-  aimTime: 6
+  reloadCannonTime: 3.33
   projectilPrefab: {fileID: 8903449752157637590, guid: 36725fcd63c7b214aaaf1d886bd622db,
     type: 3}
   cannonTip: {fileID: 6594820436223126866}
@@ -903,6 +904,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: TargetCannonAgent
+      objectReference: {fileID: 0}
+    - target: {fileID: 2626533971334014416, guid: c0a973760ea416646ad0cdf253c5f307,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 126
       objectReference: {fileID: 0}
     - target: {fileID: 2626533971334014419, guid: c0a973760ea416646ad0cdf253c5f307,
         type: 3}

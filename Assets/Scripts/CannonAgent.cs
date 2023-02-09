@@ -11,8 +11,7 @@ public class CannonAgent : Agent
     [SerializeField] private Transform currentTarget;
     bool currentTargetDead;
 
-    [SerializeField] private float aimTime;
-    float timetoShoot, timeDecidingShot;
+    [SerializeField] private float reloadCannonTime;
 
     [Header("Variables para disparar")]
     [SerializeField] private GameObject projectilPrefab;
@@ -38,10 +37,11 @@ public class CannonAgent : Agent
     [SerializeField] private Material loseMaterial;
     [SerializeField] private MeshRenderer floorRenderer;
 
+    bool canAim, canShoot;
+
     public override void OnEpisodeBegin()
     {
-        //print("episode begin " + Time.time);
-        timeDecidingShot = 0;
+        canAim = true;
         shotsMade = 0;
         rotacionVertical.localRotation = rotacionVerticalInicial;
         rotacionHorizontal.localRotation = rotacionHorizontalInicial;
@@ -50,9 +50,10 @@ public class CannonAgent : Agent
 
     private void Start()
     {
+        canAim = true;
+        canShoot = true;
         shotsMade = 0;
         currentTargetDead = true;
-        timetoShoot = Time.time + aimTime;
         rotacionHorizontalInicial = rotacionHorizontal.localRotation;
         rotacionVerticalInicial = rotacionVertical.localRotation;
     }
@@ -91,48 +92,29 @@ public class CannonAgent : Agent
 
         ActionSegment<int> discreteAction = actionsOut.DiscreteActions;
 
-        discreteAction[0] = Input.GetKey(KeyCode.Space) ? 1 : 0;
+        discreteAction[0] = Input.GetKey(KeyCode.F) ? 1 : 0;
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        //for (int i = 0; i < actions.ContinuousActions.Length; i++)
+
+        //if (_proyectil != null)
         //{
-        //    if (actions.ContinuousActions[i] > 0)
-        //    {
-        //        print("Continous action " + i + " " + actions.ContinuousActions[i]);
-        //    }
+        //    //if (Vector3.Distance(currentTarget.position, _proyectil.transform.position) < 3f)
+        //    //{
+        //    //    AddReward(1f);
+        //    //}
+        //    //else {
+        //    //    AddReward(-1f);
+        //    //}
 
+        //    float rewardByDistance = DistanceToReward(Vector3.Distance(currentTarget.position, _proyectil.transform.position));
+        //    print("reward by dist " + rewardByDistance);
+        //    AddReward(rewardByDistance);
         //}
-        //print("Discrete action " + actions.DiscreteActions[0]);
 
-        if (Time.time > timetoShoot)
+        if (canAim)
         {
-            print("Deciding to shoot " );
-            timeDecidingShot += Time.deltaTime;
-            if (timeDecidingShot > aimTime*.333f)
-            {
-                timetoShoot = aimTime + Time.time;
-            }
-            print("discrete action " + actions.DiscreteActions[0]);
-            if (actions.DiscreteActions[0] > 0 && shotsMade < totalShots)
-            {
-                shotsMade++;
-                Disparar();
-                
-                timetoShoot = aimTime + Time.time;
-            } else if (shotsMade >= totalShots)
-            {
-                Lose();
-                EndEpisode();
-            }
-        }
-        else
-        {
-            timeDecidingShot = 0;
-
-            print("aiming");
-
             var verticalMove = actions.ContinuousActions[0];
             //print("Vertical move action " + verticalMove);
             Vector3 ear = rotacionVertical.transform.rotation.ToEulerAngles();
@@ -143,29 +125,44 @@ public class CannonAgent : Agent
             }
 
             var horizontalMove = actions.ContinuousActions[1];
-
-            if (horizontalMove > 0)
-            {
-                print(" horizontal > 0");
-            }
-            else
-            {
-                print("horizontal <= 0");
-            }
-
-            //print("Horizontal move action " + horizontalMove);
-            rotacionHorizontal.Rotate(0, horizontalMove * rotationFactor, 0);   
+            rotacionHorizontal.Rotate(0, horizontalMove * rotationFactor, 0);
         }
+        if (canShoot && actions.DiscreteActions[0] > 0 && shotsMade < totalShots)
+        {
+            Invoke("Disparar", .111f);
+            canAim = false;
+            canShoot = false;
+            Invoke("ActivateAim", .5f);
+            Invoke("ActivateShoot", reloadCannonTime);
+            shotsMade++;
+            //Disparar();
+        }
+        if (shotsMade >= totalShots)
+        {
+            Lose();
+            EndEpisode();
+        }
+    }
 
+    void ActivateAim()
+    {
+        canAim = true;
+    }
+
+    void ActivateShoot()
+    {
+        canShoot = true;
     }
 
     [ContextMenu("Disparar")]
     void Disparar()
     {
-        _proyectil = Instantiate(projectilPrefab, cannonTip.parent.position, Quaternion.identity).GetComponent<Proyectil>();
+        _proyectil = Instantiate(projectilPrefab, cannonTip.parent.position, Quaternion.identity, transform.parent)
+            .GetComponent<Proyectil>();
         Vector3 _dirShoot = cannonTip.position - cannonTip.parent.position;
 
         psCannonExplosion.Play();
+        _proyectil.target = currentTarget;
         _proyectil.cannonAgent = this;
         _proyectil.GetComponent<Rigidbody>().AddForce(_dirShoot * force, ForceMode.Impulse);
         _proyectil.GetComponent<Rigidbody>().useGravity = true;
