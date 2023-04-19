@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2869235904918541514}
   m_Layer: 0
   m_Name: Projectil
-  m_TagString: Untagged
+  m_TagString: Proyectil
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,11 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numCol: 0
-  colisionsForExplode: 10
-  particleExplosion: {fileID: 8182924260968368796, guid: a84e28da8ff34ce4c814e83d0aa2e420,
-    type: 3}
-  explosionForce: 0
-  radioExplosion: 0
+  target: {fileID: 0}
 --- !u!54 &2869235904918541514
 Rigidbody:
   m_ObjectHideFlags: 0

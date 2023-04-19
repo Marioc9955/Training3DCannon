@@ -6,6 +6,8 @@ TagManager:
   tags:
   - TargetCannonAgent
   - Wall
+  - Proyectil
+  - Suelo
   layers:
   - Default
   - TransparentFX
