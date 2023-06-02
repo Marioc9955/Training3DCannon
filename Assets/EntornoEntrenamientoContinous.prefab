@@ -138,7 +138,7 @@ MonoBehaviour:
   radioTargetRandomPosicion: 88
   cannonTip: {fileID: 6594820436223126866}
   force: 666
-  totalShots: 10
+  totalShots: 5
   shootDelay: 15
   projectilePool: {fileID: 0}
   shotsMade: 0

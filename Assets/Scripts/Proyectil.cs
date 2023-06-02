@@ -66,8 +66,8 @@ public class Proyectil : MonoBehaviour
     public float DistanceToReward(float d)
     {
         float r = Mathf.Clamp(1.1f - 0.9f * Mathf.Log10(d * 0.7f), -0.5f, 0.5f);
-        r = Mathf.InverseLerp(-0.5f, 0.5f, r);
-        r = Mathf.Lerp(-0.005f, 0.01f, r);
+        //r = Mathf.InverseLerp(-0.5f, 0.5f, r);
+        //r = Mathf.Lerp(-0.005f, 0.01f, r);
 
         return r;
         
